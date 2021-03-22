@@ -169,7 +169,7 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
 
   $css_settings['bg_image_color'] = array(
     '#type' => 'textarea',
-    '#title' => t('Color'),
+    '#title' => t('Background color'),
     '#description' => t('The background color formatted as any valid css color format (e.g. hex, rgb, text, hsl) [!link]. One per line. !break
     If the field is multiple and the option %multiple is enabled, the first line will be applied to the first value, !break
     the second to the second value... and so on.', array('!link' => $link, '!break' => '<br/>')),
