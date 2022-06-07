@@ -128,6 +128,9 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
 
   $css_settings = &$element['css_settings'];
 
+  $token_browser_link = theme('token_tree_link', array(
+    'token_types' => array_keys($field['bundles']),
+  ));
   // The selector for the background property.
   $css_settings['bg_image_selector'] = array(
     '#type' => 'textarea',
@@ -142,6 +145,7 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
       ),
     ),
   );
+  $css_settings['bg_image_selector']['#description'] .= ' ' . $token_browser_link;
 
   $css_settings['classes'] = array(
     '#type' => 'textarea',
@@ -174,36 +178,7 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
     the second to the second value... and so on.', array('!link' => $link, '!break' => '<br/>')),
     '#default_value' => $settings['css_settings']['bg_image_color'],
   );
-
-  if (module_exists('token') && !empty($field)) {
-    $tokens_mapping = token_get_entity_mapping();
-    $entity_types = array_keys($field['bundles']);
-    $tokens_list = array();
-
-    foreach ($tokens_mapping as $token_map => $entity_map) {
-      foreach ($entity_types as $entity_type) {
-        if ($entity_type == $entity_map) {
-          $tokens_list[] = $token_map;
-        }
-      }
-    }
-
-    // Fieldset for tokens.
-    $css_settings['tokens'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Available tokens'),
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
-    );
-
-    // Tokens available.
-    $css_settings['tokens']['list'] = array(
-      '#theme' => 'token_tree',
-      '#token_types' => $tokens_list,
-      '#global_types' => TRUE,
-      '#click_insert' => TRUE,
-    );
-  }
+  $css_settings['bg_image_color']['#description'] .= ' ' . $token_browser_link;
 
   // The CSS background-position property.
   $link = l(t('css property: background-position'), 'https://www.w3.org/TR/css3-background', array(
@@ -386,17 +361,11 @@ function bg_image_formatter_field_formatter_view($entity_type, $entity, $field, 
       $image_url = image_style_url($settings['image_style'], $item['uri']);
     }
 
-    if (module_exists('token')) {
-      $tokens_mapping = array_flip(token_get_entity_mapping());
-
-      // Replace the tokens.
-      $selectors = array_map(function ($selector) use ($tokens_mapping, $entity_type, $entity) {
-        return token_replace($selector, array($tokens_mapping[$entity_type] => $entity));
-      }, $selectors);
-
-      $colors = array_map(function ($color) use ($tokens_mapping, $entity_type, $entity) {
-        return token_replace($color, array($tokens_mapping[$entity_type] => $entity));
-      }, $colors);
+    foreach ($selectors as $index => $string) {
+      $selectors[$index] = token_replace(trim($string), array($entity_type => $entity));
+    }
+    foreach ($colors as $index => $string) {
+      $colors[$index] = token_replace(trim($string), array($entity_type => $entity));
     }
 
     switch ($settings['bg_image_output_type']) {
