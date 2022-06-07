@@ -74,7 +74,6 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
 
   $placeholders = array(
     '!image_styles_link' => l(t('the image style'), '/admin/config/media/image-styles'),
-    '!bg_image_link' => l(t('the default configuration set in the bg_image configuration page'), '/admin/config/content/background-image'),
     '%none' => t('None'),
     '%multiple' => t('Multiple'),
     '!break' => '<br/>',
@@ -86,7 +85,7 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
     '#default_value' => $settings['image_style'],
     '#empty_option' => t('None (original image)'),
     '#options' => image_style_options(),
-    '#description' => t('Select !image_styles_link to apply on images. If %none is selected, it will use !bg_image_link.',
+    '#description' => t('Select !image_styles_link to apply on images. If %none is selected, it will use the original image.',
       $placeholders
     ),
   );
