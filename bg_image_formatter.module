@@ -132,6 +132,7 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
     'token_types' => array_keys($field['bundles']),
   ));
   // The selector for the background property.
+  $input_name_attr = 'fields[' . $instance['field_name'] . '][settings_edit_form][settings][bg_image_output_type]';
   $css_settings['bg_image_selector'] = array(
     '#type' => 'textarea',
     '#title' => t('Selector(s)'),
@@ -141,7 +142,7 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
     '#default_value' => $settings['css_settings']['bg_image_selector'],
     '#states' => array(
       'visible' => array(
-        ':input[name="fields[field_image][settings_edit_form][settings][bg_image_output_type]"]' => array('value' => 'css'),
+        ':input[name="' . $input_name_attr . '"]' => array('value' => 'css'),
       ),
     ),
   );
@@ -156,7 +157,7 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
     '#default_value' => $settings['css_settings']['classes'],
     '#states' => array(
       'visible' => array(
-        ':input[name="fields[field_image][settings_edit_form][settings][bg_image_output_type]"]' => array('value' => 'inline'),
+        ':input[name="' . $input_name_attr . '"]' => array('value' => 'inline'),
       ),
     ),
   );
