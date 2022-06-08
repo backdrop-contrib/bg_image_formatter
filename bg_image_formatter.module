@@ -128,11 +128,30 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
 
   $css_settings = &$element['css_settings'];
 
-  $token_browser_link = theme('token_tree_link', array(
-    'token_types' => array_keys($field['bundles']),
-  ));
-  // The selector for the background property.
   $input_name_attr = 'fields[' . $instance['field_name'] . '][settings_edit_form][settings][bg_image_output_type]';
+  $token_browser_link = '';
+  $entity_types = array();
+  if (!empty($field['bundles'])) {
+    $entity_types = array_keys($field['bundles']);
+  }
+  elseif (isset($form_state['view'])) {
+    // Views need a little more work to get the entity types.
+    $field_instances = field_read_instances(array('field_name' => $instance['field_name']));
+    $types = array();
+    foreach ($field_instances as $index => $definition) {
+      $types[] = $definition['entity_type'];
+    }
+    $entity_types = array_unique($types);
+    // In Views field setting forms the name attribute is different.
+    $input_name_attr = 'options[settings][bg_image_output_type]';
+  }
+  if (!empty($entity_types)) {
+    $token_browser_link = theme('token_tree_link', array(
+      'token_types' => $entity_types,
+    ));
+  }
+
+  // The selector for the background property.
   $css_settings['bg_image_selector'] = array(
     '#type' => 'textarea',
     '#title' => t('Selector(s)'),
