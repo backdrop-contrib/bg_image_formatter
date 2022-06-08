@@ -109,6 +109,10 @@ function bg_image_formatter_add_background_image_css($image_path, $css_settings 
   if ($selector && $image_path) {
     $style = sprintf('%s {', $selector);
     $style .= sprintf('background-color: %s %s;', $bg_color, $important);
+    if (isset($css_settings['bg_image_text_color'])) {
+      $text_color = $css_settings['bg_image_text_color'];
+      $style .= sprintf('color: %s %s;', $text_color, $important);
+    }
     $style .= sprintf("background-image: url('%s') %s;", $image_path, $important);
     $style .= sprintf('background-repeat: %s %s;', $repeat, $important);
     $style .= sprintf('background-attachment: %s %s;', $attachment, $important);
@@ -116,6 +120,12 @@ function bg_image_formatter_add_background_image_css($image_path, $css_settings 
     $style .= $bg_size;
     $style .= $background_size_ie8 ? $ie_bg_size : '';
     $style .= "}";
+    if (isset($css_settings['bg_image_text_color'])) {
+      // yikes! Silly idea!
+      $style .= sprintf('%s * {', $selector);
+      $style .= sprintf('color: %s %s;', $text_color, $important);
+      $style .= '}';
+    }
 
     return array(
       'type' => 'inline',
@@ -153,4 +163,17 @@ function _bg_image_formatter_path_to_uri($path) {
     // If the public files directory isn't in the path, just return it as a uri.
     return file_build_uri($relative_path);
   }
+}
+
+function _bg_image_formatter_extract_image_color(array $item) {
+  $gdimage = imagecreatefromstring(file_get_contents($item['uri']));
+  $width = $item['width'];
+  $height = $item['height'];
+  $tmp = imagecreatetruecolor(1, 1);
+  imagecopyresampled($tmp, $gdimage, 0, 0, 0, 0, 1, 1, $width, $height);
+  $pixelcolor = imagecolorat($tmp, 0, 0);
+  $rgb = imagecolorsforindex($tmp, $pixelcolor);
+  unset($rgb['alpha']);
+
+  return $rgb;
 }

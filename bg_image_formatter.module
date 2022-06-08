@@ -51,6 +51,8 @@ function bg_image_formatter_field_formatter_info() {
           'classes' => '',
           'bg_image_selector' => 'body',
           'bg_image_color' => '#FFFFFF',
+          'bg_image_auto_color' => FALSE,
+          'bg_image_auto_fgcolor' => FALSE,
           'bg_image_x' => 'left',
           'bg_image_y' => 'top',
           'bg_image_attachment' => 'scroll',
@@ -199,6 +201,17 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
     '#default_value' => $settings['css_settings']['bg_image_color'],
   );
   $css_settings['bg_image_color']['#description'] .= ' ' . $token_browser_link;
+
+  $css_settings['bg_image_auto_color'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'Automatic background color',
+    '#default_value' => isset($settings['css_settings']['bg_image_auto_color']) ? $settings['css_settings']['bg_image_auto_color'] : FALSE,
+  );
+  $css_settings['bg_image_auto_fgcolor'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'Automatic text color',
+    '#default_value' => isset($settings['css_settings']['bg_image_auto_fgcolor']) ? $settings['css_settings']['bg_image_auto_fgcolor'] : FALSE,
+  );
 
   // The CSS background-position property.
   $link = l(t('css property: background-position'), 'https://www.w3.org/TR/css3-background', array(
@@ -387,6 +400,23 @@ function bg_image_formatter_field_formatter_view($entity_type, $entity, $field, 
     foreach ($colors as $index => $string) {
       $colors[$index] = token_replace(trim($string), array($entity_type => $entity));
     }
+
+    $avg_color = FALSE;
+    if (!empty($css_settings['bg_image_auto_color'])) {
+      $avg_color = _bg_image_formatter_extract_image_color($item);
+      $colors[$delta] = 'rgb(' . implode(', ', $avg_color) . ')';
+    }
+    $text_color = FALSE;
+    if ($avg_color && !empty($css_settings['bg_image_auto_fgcolor'])) {
+      $brightness = array_sum($avg_color) / 3;
+      if ($brightness > 128) {
+        $text_color = '#000';
+      }
+      else {
+        $text_color = '#fff';
+      }
+    }
+    $css_settings['bg_image_text_color'] = $text_color;
 
     switch ($settings['bg_image_output_type']) {
       case 'css':
