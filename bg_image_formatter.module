@@ -51,6 +51,7 @@ function bg_image_formatter_field_formatter_info() {
           'classes' => '',
           'bg_image_selector' => 'body',
           'bg_image_color' => '#FFFFFF',
+          'bg_image_auto_color' => FALSE,
           'bg_image_x' => 'left',
           'bg_image_y' => 'top',
           'bg_image_attachment' => 'scroll',
@@ -199,6 +200,13 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
     '#default_value' => $settings['css_settings']['bg_image_color'],
   );
   $css_settings['bg_image_color']['#description'] .= ' ' . $token_browser_link;
+
+  $css_settings['bg_image_auto_color'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Automatic background color'),
+    '#default_value' => isset($settings['css_settings']['bg_image_auto_color']) ? $settings['css_settings']['bg_image_auto_color'] : FALSE,
+    '#description' => t('Set the background color based on the average color of an image, overrides manual color settings from above.'),
+  );
 
   // The CSS background-position property.
   $link = l(t('css property: background-position'), 'https://www.w3.org/TR/css3-background', array(
@@ -388,6 +396,12 @@ function bg_image_formatter_field_formatter_view($entity_type, $entity, $field, 
       $colors[$index] = token_replace(trim($string), array($entity_type => $entity));
     }
 
+    $avg_color = FALSE;
+    if (!empty($css_settings['bg_image_auto_color'])) {
+      $avg_color = _bg_image_formatter_extract_image_color($item);
+      $colors[$delta] = 'rgb(' . implode(', ', $avg_color) . ')';
+    }
+
     switch ($settings['bg_image_output_type']) {
       case 'css':
         if ($settings['multiple']) {
@@ -415,6 +429,16 @@ function bg_image_formatter_field_formatter_view($entity_type, $entity, $field, 
               ),
             ),
           );
+          // Attach js to set css classes based on background-color.
+          // @todo UI separate setting for that?
+          if ($delta === 0) {
+            $js_settings = array('bg_image_formatter' => array('selectors' => $selectors));
+            $element['#attached']['js'][] = array(
+              'type' => 'setting',
+              'data' => $js_settings,
+            );
+            $element['#attached']['js'][] = backdrop_get_path('module', 'bg_image_formatter') . '/js/bg-image-formatter.js';
+          }
         }
         break;
 

@@ -154,3 +154,25 @@ function _bg_image_formatter_path_to_uri($path) {
     return file_build_uri($relative_path);
   }
 }
+
+/**
+ * Calculate the average color of an image.
+ *
+ * @param array $item
+ *   Array of field values provided by hook__field_formatter_view().
+ *
+ * @return array
+ *   Array of color values keyed by red, green, blue.
+ */
+function _bg_image_formatter_extract_image_color(array $item) {
+  $gdimage = imagecreatefromstring(file_get_contents($item['uri']));
+  $width = $item['width'];
+  $height = $item['height'];
+  $tmp = imagecreatetruecolor(1, 1);
+  imagecopyresampled($tmp, $gdimage, 0, 0, 0, 0, 1, 1, $width, $height);
+  $pixelcolor = imagecolorat($tmp, 0, 0);
+  $rgb = imagecolorsforindex($tmp, $pixelcolor);
+  unset($rgb['alpha']);
+
+  return $rgb;
+}
