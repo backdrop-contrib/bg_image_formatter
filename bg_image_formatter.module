@@ -406,7 +406,7 @@ function bg_image_formatter_field_formatter_view($entity_type, $entity, $field, 
         backdrop_alter('bg_image_formatter_css_settings', $css_settings, $context);
 
         if ($css = bg_image_formatter_add_background_image_css($item['uri'], $css_settings, $image_style)) {
-          $element[0]['#attached'] = array(
+          $element[$delta]['#attached'] = array(
             'css' => array(
               $css['style'] => array(
                 'type' => $css['type'],
