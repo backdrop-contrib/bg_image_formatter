@@ -205,7 +205,7 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
     '#type' => 'checkbox',
     '#title' => t('Automatic background color'),
     '#default_value' => isset($settings['css_settings']['bg_image_auto_color']) ? $settings['css_settings']['bg_image_auto_color'] : FALSE,
-    '#description' => t('Set the background color based on the average color of an image.'),
+    '#description' => t('Set the background color based on the average color of an image, overrides manual color settings from above.'),
   );
 
   // The CSS background-position property.
