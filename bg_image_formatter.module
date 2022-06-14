@@ -431,12 +431,14 @@ function bg_image_formatter_field_formatter_view($entity_type, $entity, $field, 
           );
           // Attach js to set css classes based on background-color.
           // @todo UI separate setting for that?
-          $js_settings = array('bg_image_formatter' => array('selectors' => $selectors));
-          $element[0]['#attached']['js'][] = array(
-            'type' => 'setting',
-            'data' => $js_settings,
-          );
-          $element[0]['#attached']['js'][] = backdrop_get_path('module', 'bg_image_formatter') . '/js/bg-image-formatter.js';
+          if ($delta === 0) {
+            $js_settings = array('bg_image_formatter' => array('selectors' => $selectors));
+            $element['#attached']['js'][] = array(
+              'type' => 'setting',
+              'data' => $js_settings,
+            );
+            $element['#attached']['js'][] = backdrop_get_path('module', 'bg_image_formatter') . '/js/bg-image-formatter.js';
+          }
         }
         break;
 
