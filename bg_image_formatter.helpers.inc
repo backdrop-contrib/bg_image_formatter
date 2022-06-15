@@ -166,8 +166,8 @@ function _bg_image_formatter_path_to_uri($path) {
  */
 function _bg_image_formatter_extract_image_color(array $item) {
   $gdimage = imagecreatefromstring(file_get_contents($item['uri']));
-  $width = $item['width'];
-  $height = $item['height'];
+  $width = imagesx($gdimage);
+  $height = imagesy($gdimage);
   $tmp = imagecreatetruecolor(1, 1);
   imagecopyresampled($tmp, $gdimage, 0, 0, 0, 0, 1, 1, $width, $height);
   $pixelcolor = imagecolorat($tmp, 0, 0);
