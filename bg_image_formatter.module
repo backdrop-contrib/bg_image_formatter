@@ -128,8 +128,13 @@ function bg_image_formatter_field_formatter_settings_form($field, $instance, $vi
   );
 
   $css_settings = &$element['css_settings'];
-
-  $input_name_attr = 'fields[' . $instance['field_name'] . '][settings_edit_form][settings][bg_image_output_type]';
+  // On form "Manage file display" the name attribute is different.
+  if ($instance['entity_type'] == 'file') {
+    $input_name_attr = 'display[settings][file_field_bg_image_formatter][bg_image_output_type]';
+  }
+  else {
+    $input_name_attr = 'fields[' . $instance['field_name'] . '][settings_edit_form][settings][bg_image_output_type]';
+  }
   $token_browser_link = '';
   $entity_types = array();
   if (!empty($field['bundles'])) {
